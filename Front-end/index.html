@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <title>EcoConecta+</title>
+</head>
+
+<body>
+
+    <div class="card-login">
+
+        <img id="logo" src="./src/img/logoSemfundo copy.jpeg" alt="logo">
+
+        <p id="fraseLogo">Conectando você ao futuro sustentável</p>
+
+        <h2 id="titulo">Login</h2>
+
+        <input type="text" id="nome" class="hidden" placeholder="Seu nome">
+        <input type="text" id="sobrenome" class="hidden" placeholder="Seu sobrenome">
+
+        <input type="email" id="email" placeholder="Digite seu e-mail...">
+
+        <input type="password" id="password" placeholder="Sua senha">
+
+        
+
+        <input type="password" id="novaSenha" class="hidden" placeholder="Nova senha">
+
+        <input type="password" id="confirmarSenha" class="hidden" placeholder="Confirmar nova senha">
+
+        <button id="btnLogin" onclick="logar()">Entrar</button>
+        <button id="btnReset" class="hidden">Redefinir senha</button>
+
+        <p id="mensagem" class="msg"></p>
+
+        <div class="cadastro">
+
+            <p id="textoTroca">
+                Esqueceu sua senha?
+                <span><a href="#" onclick="ativarModoReset()">Clique aqui</a></span>
+            </p>
+
+            <p id="cadastro">
+                Não tem uma conta?
+                <span><a href="#" onclick="ativarModoCadastro()">Cadastre-se</a></span>
+            </p>
+
+            <button id="btnCadastro" class="hidden">Cadastrar</button>
+
+        </div>
+        
+
+    </div>
+
+    <script src="./js/auth.js"></script>
+    <script src="./js/dashboard.js"></script>
+
+</body>
+
+</html>
