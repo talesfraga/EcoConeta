@@ -1,0 +1,201 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* CONTAINER */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CARD LOGIN */
+.card-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 280px;
+    padding: 30px;
+
+    background: rgba(0, 30, 20, 0.25);
+    border-radius: 15px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(0, 255, 150, 0.2);
+
+    /* CORRIGIDO */
+    box-shadow: 0 0 25px rgba(0, 255, 150, 0.8);
+
+    text-align: center;
+    color: white;
+
+    z-index: 10;
+}
+
+.card-login #fraseLogo {
+    margin-bottom: 30px;
+    margin-top: -65px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+}
+
+/* LOGO */
+.card-login #logo {
+    width: 300px;
+    margin-bottom: -30px;
+    margin-top: -40px;
+}
+
+/* TÍTULO */
+.card-login h2 {
+    margin-bottom: 20px;
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88;
+}
+
+/* INPUT */
+.card-login input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+
+    border: none;
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.6);
+    color: white;
+    outline: none;
+}
+
+/* PLACEHOLDER */
+.card-login input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* BOTÃO */
+.card-login button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #00ff88;
+    color: black;
+    cursor: pointer;
+
+    box-shadow: 0 0 10px #00ff88;
+}
+
+/* HOVER */
+.card-login button:hover {
+    background: #00cc66;
+}
+
+/* 🍃 FOLHAS */
+.leaf {
+    position: absolute;
+    width: 20px;
+    height: 12px;
+
+    border-radius: 50% 0 50% 0;
+    transform: rotate(45deg);
+
+    opacity: 0.6;
+    animation: fall linear infinite;
+
+    z-index: 1;
+}
+
+/* ANIMAÇÃO */
+@keyframes fall {
+    0% {
+        transform: translateY(-10px) translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) translateX(80px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* esqueceu senha e cadastro */
+
+.cadastro {
+    margin-top: 15px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.cadastro p{
+    margin: 5px 0;
+    color: rgba(255, 255, 255, 0.7);
+
+}
+
+/* LINK */
+
+.cadastro a {
+    color: #00ff88;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.cadastro a:hover {
+    color: #00cc66;
+    text-decoration: 0 0 8px #00ff88;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Mensagem de eror */
+
+.msg {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+/* Sucesso */
+
+.msg.sucesso {
+    color: #00ff88;
+}
+
+/* Erro */
+
+.msg.erro {
+    color: #ff4d4d;
+}
+
+.msg.sucesso, .msg.erro {
+    opacity: 1;
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <title>EcoConecta+</title>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <img src="../src/img/logoSemfundo.jpeg" alt="EcoConecta+">
+
+        <a href="#" onclick="mostrarSecao('inicio')">🌿 EcoBoard</a>
+        <a href="#" onclick="mostrarSecao('chat')">💬 EcoChat</a>
+        <a href="#" onclick="mostrarSecao('mapa')">🗺️ EcoMapa</a>
+        <a href="#" onclick="mostrarSecao('denuncia')">🚨 EcoDenúncia</a>
+        <a href="#" onclick="mostrarSecao('educacao')">📚 EcoEducação</a>
+    </aside>
+
+    <div class="containerDeshboard">
+
+        <!-- INÍCIO -->
+        <div id="secao-inicio">
+            <h2 id="boasVindas">Bem-vindo ao EcoConecta+ 🌱</h2>
+            <p id="subtitulo">Conectando você ao futuro sustentável</p>
+        </div>
+
+        <!-- ECOCHAT -->
+        <div id="secao-chat" class="hidden">
+            <h2 class="secao-titulo">💬 EcoChat — Assistente Ambiental</h2>
+            <div class="chat-container">
+                <div id="chatMensagens" class="chat-mensagens"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Pergunte sobre meio ambiente..." />
+                    <button onclick="enviarMensagem()">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ECOMAPA -->
+        <div id="secao-mapa" class="hidden">
+            <h2 class="secao-titulo">🗺️ EcoMapa</h2>
+            <p style="color:#aaa">Em breve: pontos de coleta e reciclagem na sua região.</p>
+        </div>
+
+        <!-- ECODENÚNCIA -->
+        <div id="secao-denuncia" class="hidden">
+            <h2 class="secao-titulo">🚨 EcoDenúncia</h2>
+
+            <div class="denuncia-wrapper">
+
+                <!-- Formulário -->
+                <div class="denuncia-form card">
+                    <h3>Registrar uma denúncia</h3>
+                    <p class="denuncia-descricao-form">Encontrou um crime ambiental? Relate aqui. Sua denúncia será registrada publicamente.</p>
+
+                    <input type="email" id="denunciaEmail" placeholder="Seu e-mail (para contato)" />
+                    <input type="text" id="denunciaTitulo" placeholder="Título da denúncia" />
+                    <textarea id="denunciaDescricao" placeholder="Descreva o que aconteceu, onde e quando..." rows="5"></textarea>
+
+                    <label class="label-foto">
+                        📷 Anexar foto (opcional)
+                        <input type="file" id="denunciaFoto" accept="image/*" />
+                    </label>
+
+                    <button onclick="enviarDenuncia()">Enviar Denúncia</button>
+                    <p id="denunciaMensagem" class="denuncia-msg"></p>
+                </div>
+
+                <!-- Feed público -->
+                <div class="denuncia-feed-section">
+                    <h3>📋 Denúncias registradas</h3>
+                    <div id="denunciaFeed" class="denuncia-feed"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ECOEDUCAÇÃO -->
+        <div id="secao-educacao" class="hidden">
+            <h2 class="secao-titulo">📚 EcoEducação</h2>
+            <p style="color:#aaa">Em breve: artigos e conteúdos sobre meio ambiente.</p>
+        </div>
+
+    </div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/chat.js"></script>
+<script src="../js/denuncia.js"></script>
+<script>
+    function mostrarSecao(secao) {
+        document.querySelectorAll('[id^="secao-"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById('secao-' + secao).classList.remove('hidden');
+        if (secao === 'denuncia') carregarDenuncias();
+    }
+</script>
+</html>
