@@ -1,7 +1,10 @@
 import { serve } from "https://deno.land/std/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
-const GEMINI_API_KEY = Deno.env.get("AIzaSyAsfEN3BRLGnyroy76mAx7cTkIHLkD0JeI")!;
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+if (!GEMINI_API_KEY) {
+  throw new Error("GEMINI_API_KEY não está configurada no ambiente");
+}
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 const supabase = createClient(
@@ -56,12 +59,24 @@ serve(async (req) => {
           parts: [{ text: "Você é um assistente focado em questões ambientais. Responda sempre em português." }]
         },
         contents,
+        temperature: 0.2,
+        candidateCount: 1,
       }),
     });
 
     const geminiData = await geminiRes.json();
     console.log("Gemini response:", JSON.stringify(geminiData));
-    const answer = geminiData.candidates?.[0]?.content?.parts?.[0]?.text ?? "Não consegui gerar uma resposta.";
+
+    if (!geminiRes.ok) {
+      console.error("Gemini API error:", geminiData);
+      throw new Error(geminiData.error?.message || "Erro na API Gemini");
+    }
+
+    const answer =
+      geminiData.candidates?.[0]?.content?.parts?.[0]?.text ??
+      geminiData.candidates?.[0]?.content?.[0]?.text ??
+      geminiData.output?.[0]?.content?.[0]?.text ??
+      "Não consegui gerar uma resposta.";
 
     await supabase.from("chat_history").insert({
       user_id: userId,

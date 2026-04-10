@@ -21,13 +21,26 @@ async function enviarMensagem() {
       body: JSON.stringify({ userId: "anonimo", message: mensagem }),
     });
 
-const data = await response.json();
+    const data = await response.json();
     digitando.remove();
-    console.log("Resposta da função:", data); // ← adiciona isso
+
+    if (!response.ok) {
+      console.error("Erro na função chat:", data);
+      adicionarBolha("Erro ao conectar com o assistente. Tente novamente.", "bot");
+      return;
+    }
+
+    if (!data?.answer) {
+      console.error("Resposta inválida da função chat:", data);
+      adicionarBolha("Não foi possível obter resposta da IA. Tente novamente.", "bot");
+      return;
+    }
+
     adicionarBolha(data.answer, "bot");
 
   } catch (err) {
     digitando.remove();
+    console.error("Erro no chat:", err);
     adicionarBolha("Erro ao conectar com o assistente. Tente novamente.", "bot");
   }
 }

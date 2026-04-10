@@ -201,62 +201,107 @@ button:active {
 
 
 /* ==============================
-   💬 ECOCHAT
+   �️ ECOMAPA
    ============================== */
 
-.chat-container {
+.mapa-container {
     display: flex;
-    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.mapa {
+    flex: 1;
     height: 500px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
+}
+
+.mapa-legenda {
+    width: 250px;
     background: rgba(0, 30, 20, 0.3);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 255, 150, 0.2);
     border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
-    overflow: hidden;
-}
-
-.chat-mensagens {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
 }
 
-.chat-mensagens::-webkit-scrollbar {
-    width: 6px;
+.mapa-legenda h3 {
+    margin-bottom: 15px;
+    color: #00ff88;
+    text-align: center;
 }
 
-.chat-mensagens::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 150, 0.3);
-    border-radius: 3px;
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-.bolha {
-    max-width: 70%;
-    padding: 10px 14px;
-    border-radius: 18px;
+.legenda-cor {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+.mapa-popup {
+    max-width: 250px;
+}
+
+.mapa-popup h4 {
+    margin: 0 0 10px 0;
+    color: #00ff88;
+}
+
+.mapa-popup p {
+    margin: 5px 0;
     font-size: 14px;
-    line-height: 1.5;
 }
 
-.bolha.usuario {
-    align-self: flex-end;
+.mapa-popup ul {
+    margin: 5px 0;
+    padding-left: 20px;
+}
+
+.mapa-popup li {
+    font-size: 13px;
+    margin: 2px 0;
+}
+
+.mapa-popup button {
+    margin-top: 10px;
+    padding: 8px 12px;
     background: #00ff88;
     color: black;
-    font-weight: 500;
-    border-bottom-right-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 255, 150, 0.4);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
 }
 
-.bolha.bot {
-    align-self: flex-start;
-    background: rgba(0, 10, 20, 0.6);
-    color: #ccc;
-    border: 1px solid rgba(0, 255, 150, 0.15);
-    border-bottom-left-radius: 4px;
+.mapa-popup button:hover {
+    background: #00cc66;
+}
+
+/* Custom marker styles */
+.custom-marker {
+    border: none !important;
+    background: none !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .mapa-container {
+        flex-direction: column;
+    }
+
+    .mapa-legenda {
+        width: 100%;
+    }
 }
 
 .bolha.digitando {
@@ -483,4 +528,275 @@ button:active {
     font-size: 14px;
     text-align: center;
     padding: 20px 0;
+}
+
+
+/* ==============================
+   📚 ECOEDUCAÇÃO
+   ============================== */
+
+.educacao-subtitulo {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Filtros */
+.educacao-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.filtro-btn {
+  margin-top: 0;
+  padding: 7px 16px;
+  width: auto;
+  font-size: 12px;
+  border-radius: 20px;
+  background: rgba(0, 30, 20, 0.4);
+  border: 1px solid rgba(0, 255, 150, 0.25);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: none;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+.filtro-btn:hover {
+  background: rgba(0, 255, 150, 0.15);
+  color: #00ff88;
+  border-color: #00ff88;
+  transform: none;
+  box-shadow: 0 0 8px rgba(0, 255, 150, 0.3);
+}
+
+.filtro-btn.ativo {
+  background: rgba(0, 255, 150, 0.2);
+  color: #00ff88;
+  border-color: #00ff88;
+  box-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
+}
+
+/* Grid de cards */
+.educacao-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  overflow-y: auto;
+  max-height: calc(100vh - 260px);
+  padding-right: 4px;
+}
+
+.educacao-grid::-webkit-scrollbar { width: 6px; }
+.educacao-grid::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 150, 0.3);
+  border-radius: 3px;
+}
+
+/* Card individual */
+.educacao-card {
+  background: rgba(0, 30, 20, 0.35);
+  border: 1px solid rgba(0, 255, 150, 0.15);
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.educacao-card:hover {
+  border-color: rgba(0, 255, 150, 0.5);
+  background: rgba(0, 40, 25, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 255, 150, 0.15);
+}
+
+.educacao-card-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.educacao-card-categoria {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  align-self: flex-start;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.categoria-reciclagem  { background: rgba(0,200,100,0.15);  color: #00cc66; border: 1px solid rgba(0,200,100,0.3); }
+.categoria-clima       { background: rgba(255,150,0,0.15);   color: #ff9600; border: 1px solid rgba(255,150,0,0.3); }
+.categoria-consumo     { background: rgba(100,150,255,0.15); color: #6496ff; border: 1px solid rgba(100,150,255,0.3); }
+.categoria-energia     { background: rgba(255,220,0,0.15);   color: #ffdc00; border: 1px solid rgba(255,220,0,0.3); }
+.categoria-biodiversidade { background: rgba(0,220,180,0.15); color: #00dcb4; border: 1px solid rgba(0,220,180,0.3); }
+
+.educacao-card-titulo {
+  font-size: 15px;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.educacao-card-resumo {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.educacao-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.educacao-leitura {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.educacao-ver-mais {
+  font-size: 12px;
+  color: #00ff88;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.educacao-card:hover .educacao-ver-mais {
+  letter-spacing: 0.5px;
+}
+
+/* ==============================
+   Modal de artigo
+   ============================== */
+
+.educacao-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.educacao-modal-overlay.visivel {
+  opacity: 1;
+}
+
+.educacao-modal {
+  background: linear-gradient(135deg, rgba(0, 30, 20, 0.95), rgba(0, 10, 5, 0.98));
+  border: 1px solid rgba(0, 255, 150, 0.25);
+  border-radius: 18px;
+  padding: 32px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0, 255, 150, 0.2);
+  transform: translateY(10px);
+  transition: transform 0.3s;
+}
+
+.educacao-modal-overlay.visivel .educacao-modal {
+  transform: translateY(0);
+}
+
+.educacao-modal::-webkit-scrollbar { width: 6px; }
+.educacao-modal::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 150, 0.3);
+  border-radius: 3px;
+}
+
+.modal-fechar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  transition: 0.2s;
+  box-shadow: none;
+  letter-spacing: 0;
+  text-transform: none;
+  width: 32px;
+  min-width: unset;
+}
+
+.modal-fechar:hover {
+  background: rgba(255, 80, 80, 0.2);
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-emoji {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.modal-titulo {
+  font-size: 20px;
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 150, 0.4);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.modal-resumo {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.modal-dicas-titulo {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.modal-dicas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-dicas li {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: rgba(0, 255, 150, 0.05);
+  border-left: 2px solid rgba(0, 255, 150, 0.4);
+  border-radius: 0 8px 8px 0;
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
 }
