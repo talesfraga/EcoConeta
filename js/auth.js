@@ -73,24 +73,24 @@ function esqSenha() {
         return;
     }
 
-    // Busca usuário no localStorage
-    const usuario = JSON.parse(localStorage.getItem(email));
+    supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password.html'
+    }).then(({ error }) => {
+        if (error) {
+            msg.innerText = "Erro ao enviar e-mail de redefinição.";
+            msg.classList.add("erro");
+            return;
+        }
 
-    if (!usuario) {
-        msg.innerText = "E-mail não encontrado!";
+        msg.innerText = "E-mail de redefinição enviado! Verifique sua caixa de entrada.";
+        msg.classList.add("sucesso");
+
+        setTimeout(voltarLogin, 2000);
+    }).catch(err => {
+        console.error("Erro na redefinição:", err);
+        msg.innerText = "Erro ao redefinir senha. Tente novamente.";
         msg.classList.add("erro");
-        return;
-    }
-
-    // Atualiza senha
-    usuario.senha = novaSenha;
-    localStorage.setItem(email, JSON.stringify(usuario));
-
-    msg.innerText = "Senha redefinida com sucesso!";
-    msg.classList.add("sucesso");
-
-    // Volta pro login após 1.5s
-    setTimeout(voltarLogin, 1500);
+    });
 }
 
 
@@ -198,26 +198,52 @@ function cadastrar() {
         return;
     }
 
-    if (localStorage.getItem(email)) {
-        msg.innerText = "Usuário já cadastrado!";
+    if (senha.length < 6) {
+        msg.innerText = "A senha deve ter pelo menos 6 caracteres!";
         msg.classList.add("erro");
         return;
     }
 
-    const usuario = {
-        nome,
-        sobrenome,
-        email,
-        senha,
-        pontos: 0
-    };
+    supabaseClient.auth.signUp({
+        email: email,
+        password: senha,
+        options: {
+            data: {
+                nome: nome,
+                sobrenome: sobrenome
+            },
+            emailRedirectTo: window.location.origin + '/index.html'
+        }
+    }).then(({ data, error }) => {
+        if (error) {
+            console.error('Erro no signup:', error);
+            if (error.message.includes("already registered")) {
+                msg.innerText = "E-mail já cadastrado!";
+            } else if (error.message.includes("Password should be at least")) {
+                msg.innerText = "A senha deve ter pelo menos 6 caracteres!";
+            } else {
+                msg.innerText = "Erro ao cadastrar: " + error.message;
+            }
+            msg.classList.add("erro");
+            return;
+        }
 
-    localStorage.setItem(email, JSON.stringify(usuario));
+        console.log('Signup successful:', data);
 
-    msg.innerText = "Cadastro realizado com sucesso!";
-    msg.classList.add("sucesso");
-
-    setTimeout(voltarLogin, 1500);
+        if (data.user && !data.user.email_confirmed_at) {
+            msg.innerText = "Cadastro realizado! Faça login com suas credenciais.";
+            msg.classList.add("sucesso");
+            setTimeout(voltarLogin, 2000);
+        } else {
+            msg.innerText = "Cadastro realizado com sucesso!";
+            msg.classList.add("sucesso");
+            setTimeout(voltarLogin, 2000);
+        }
+    }).catch(err => {
+        console.error("Erro no cadastro:", err);
+        msg.innerText = "Erro ao cadastrar. Verifique o console para mais detalhes.";
+        msg.classList.add("erro");
+    });
 }
 
 
