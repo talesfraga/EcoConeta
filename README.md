@@ -1,215 +1,177 @@
-# EcoConecta+ 🌿
+# Supabase CLI
 
-Uma plataforma web para conscientização ambiental e denúncias ecológicas.
+[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=develop)](https://coveralls.io/github/supabase/cli?branch=develop) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
+](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
 
-## Funcionalidades
+[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
 
-- 🔐 **Autenticação**: Login/cadastro com Supabase Auth
-- 💬 **EcoChat**: Chatbot ambiental com IA (Google Gemini)
-- 🚨 **EcoDenúncia**: Sistema de denúncias ambientais com upload de fotos
-- 🗺️ **EcoMapa**: Mapa interativo com pontos de reciclagem
-- 📚 **EcoEducação**: Artigos e dicas sobre sustentabilidade
+This repository contains all the functionality for Supabase CLI.
 
-## Tecnologias
+- [x] Running Supabase locally
+- [x] Managing database migrations
+- [x] Creating and deploying Supabase Functions
+- [x] Generating types directly from your database schema
+- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Supabase (PostgreSQL + Edge Functions)
-- **IA**: Google Gemini API
-- **Mapa**: Leaflet.js
-- **Storage**: Supabase Storage
+## Getting started
 
-## Configuração
+### Install the CLI
 
-### 1. Pré-requisitos
-
-- Node.js instalado
-- Conta no [Supabase](https://supabase.com)
-- Chave da API do [Google Gemini](https://makersuite.google.com/app/apikey)
-
-### 2. Clonagem e Instalação
+Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
 
 ```bash
-git clone <seu-repositorio>
-cd EcoConecta-v2
+npm i supabase --save-dev
 ```
 
-### 3. Configuração das Variáveis de Ambiente
-
-1. Copie o arquivo de exemplo:
-```bash
-cp .env.example .env
-```
-
-2. Configure as variáveis no arquivo `.env`:
-```
-SUPABASE_URL=https://seu-projeto.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key
-GEMINI_API_KEY=sua_gemini_api_key
-```
-
-### 4. Configuração do Banco de Dados
-
-Execute o script SQL `database-setup.sql` no SQL Editor do Supabase:
-
-1. Acesse seu projeto no Supabase
-2. Vá para SQL Editor
-3. Cole e execute o conteúdo do arquivo `database-setup.sql`
-
-Ou crie as tabelas manualmente:
-
-```sql
--- Tabela para histórico do chat
-CREATE TABLE chat_history (
-  id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  question TEXT NOT NULL,
-  answer TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabela para denúncias
-CREATE TABLE denuncias (
-  id SERIAL PRIMARY KEY,
-  email TEXT NOT NULL,
-  titulo TEXT NOT NULL,
-  descricao TEXT NOT NULL,
-  foto_url TEXT,
-  status TEXT DEFAULT 'pendente',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-### 5. Configuração do Storage
-
-1. No dashboard do Supabase, vá para **Storage**
-2. Clique em **Create bucket**
-3. Nome: `denuncias-fotos`
-4. Marque como **Public bucket**
-5. Configure:
-   - File size limit: 5MB
-   - Allowed MIME types: `image/*`
-
-### 6. Configuração das Edge Functions
-
-Configure as variáveis de ambiente no Supabase:
-
-1. Dashboard > Settings > Environment variables
-2. Adicione:
-   - `GEMINI_API_KEY`: Sua chave da API do Google Gemini
-
-### 7. Deploy da Function
-
-```bash
-cd supabase
-supabase login
-supabase link --project-ref SEU_PROJECT_REF
-supabase functions deploy chat
-```
-
-### 6. Executar o Projeto
-
-Abra o arquivo `Front-end/index.html` no navegador ou use um servidor local:
-
-```bash
-cd Front-end
-python -m http.server 8000
-# Acesse: http://localhost:8000
-```
-
-## Estrutura do Projeto
+When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
 
 ```
-EcoConecta-v2/
-├── Front-end/
-│   ├── index.html          # Página de login
-│   ├── reset-password.html # Redefinição de senha
-│   ├── html/
-│   │   └── dashboard.html  # Dashboard principal
-│   ├── css/
-│   │   ├── global.css      # Estilos globais
-│   │   └── dashboard.css   # Estilos do dashboard
-│   ├── js/
-│   │   ├── auth.js         # Autenticação
-│   │   ├── dashboard.js    # Dashboard
-│   │   ├── chat.js         # Chatbot
-│   │   ├── denuncia.js     # Sistema de denúncias
-│   │   ├── educacao.js     # Educação ambiental
-│   │   ├── mapa.js         # Mapa interativo
-│   │   └── supabase.js     # Configuração Supabase
-│   └── src/img/            # Imagens
-└── supabase/
-    ├── config.toml         # Configuração Supabase
-    └── functions/
-        └── chat/
-            ├── index.ts    # Edge Function do chat
-            └── deno.json   # Configuração Deno
+NODE_OPTIONS=--no-experimental-fetch yarn add supabase
 ```
 
-## Funcionalidades Detalhadas
+> **Note**
+For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
 
-### Autenticação
-- Cadastro e login com e-mail/senha
-- Recuperação de senha por e-mail
-- Logout seguro
+<details>
+  <summary><b>macOS</b></summary>
 
-### EcoChat
-- Chatbot alimentado por IA do Google Gemini
-- Histórico de conversas por usuário
-- Respostas em português sobre temas ambientais
+  Available via [Homebrew](https://brew.sh). To install:
 
-### EcoDenúncia
-- Formulário para registrar denúncias
-- Upload de fotos para o Supabase Storage
-- Feed público de denúncias
-- Status de acompanhamento (pendente, em análise, resolvido)
+  ```sh
+  brew install supabase/tap/supabase
+  ```
 
-### EcoMapa
-- Mapa interativo com Leaflet.js
-- Pontos de reciclagem, ecopontos e cooperativas
-- Localização do usuário
-- Popups com informações detalhadas
+  To install the beta release channel:
+  
+  ```sh
+  brew install supabase/tap/supabase-beta
+  brew link --overwrite supabase-beta
+  ```
+  
+  To upgrade:
 
-### EcoEducação
-- Artigos sobre reciclagem, clima, consumo, energia e biodiversidade
-- Sistema de filtros por categoria
-- Modal com dicas detalhadas
+  ```sh
+  brew upgrade supabase
+  ```
+</details>
 
-## Desenvolvimento
+<details>
+  <summary><b>Windows</b></summary>
 
-### Comandos Úteis
+  Available via [Scoop](https://scoop.sh). To install:
+
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
+
+  To upgrade:
+
+  ```powershell
+  scoop update supabase
+  ```
+</details>
+
+<details>
+  <summary><b>Linux</b></summary>
+
+  Available via [Homebrew](https://brew.sh) and Linux packages.
+
+  #### via Homebrew
+
+  To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+
+  #### via Linux packages
+
+  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
+
+  ```sh
+  sudo apk add --allow-untrusted <...>.apk
+  ```
+
+  ```sh
+  sudo dpkg -i <...>.deb
+  ```
+
+  ```sh
+  sudo rpm -i <...>.rpm
+  ```
+
+  ```sh
+  sudo pacman -U <...>.pkg.tar.zst
+  ```
+</details>
+
+<details>
+  <summary><b>Other Platforms</b></summary>
+
+  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
+
+  ```sh
+  go install github.com/supabase/cli@latest
+  ```
+
+  Add a symlink to the binary in `$PATH` for easier access:
+
+  ```sh
+  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
+  ```
+
+  This works on other non-standard Linux distros.
+</details>
+
+<details>
+  <summary><b>Community Maintained Packages</b></summary>
+
+  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
+  To install in your working directory:
+
+  ```bash
+  pkgx install supabase
+  ```
+
+  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
+</details>
+
+### Run the CLI
 
 ```bash
-# Iniciar Supabase local
-supabase start
-
-# Deploy das functions
-supabase functions deploy chat
-
-# Logs das functions
-supabase functions logs chat
-
-# Testar functions localmente
-supabase functions serve chat
+supabase bootstrap
 ```
 
-### Estrutura do Banco
+Or using npx:
 
-As tabelas principais são:
-- `chat_history`: Histórico das conversas do chatbot
-- `denuncias`: Registro das denúncias ambientais
+```bash
+npx supabase bootstrap
+```
 
-## Contribuição
+The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
+## Docs
 
-## Licença
+Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+## Breaking changes
 
-## Contato
+We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
 
-Para dúvidas ou sugestões, abra uma issue no GitHub.
+However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+
+## Developing
+
+To run from source:
+
+```sh
+# Go >= 1.22
+go run . help
+```
