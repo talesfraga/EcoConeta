@@ -32,16 +32,6 @@ serve(async (req) => {
   }
 
   try {
-    const token = req.headers.get("authorization")?.replace("Bearer ", "");
-    if (!token) {
-      return json({ error: "Sessao obrigatoria" }, 401);
-    }
-
-    const { data: authData, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !authData.user) {
-      return json({ error: "Sessao invalida" }, 401);
-    }
-
     const { message } = await req.json();
     if (!message || typeof message !== "string") {
       return json({ error: "message e obrigatorio" }, 400);
@@ -52,7 +42,7 @@ serve(async (req) => {
       return json({ error: "message deve ter entre 2 e 1000 caracteres" }, 400);
     }
 
-    const userId = authData.user.id;
+    const userId = "public";
 
     const { data: historico } = await supabase
       .from("chat_history")

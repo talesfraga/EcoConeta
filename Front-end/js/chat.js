@@ -18,19 +18,6 @@ async function enviarMensagem() {
   const digitando = adicionarBolha("...", "bot", true);
 
   try {
-    let { data: { session } } = await supabaseClient.auth.getSession();
-
-    if (!session?.access_token) {
-      const { data } = await supabaseClient.auth.refreshSession();
-      session = data.session;
-    }
-
-    if (!session?.user || !session?.access_token) {
-      digitando.remove();
-      adicionarBolha("Faca login novamente para usar o EcoChat.", "bot");
-      return;
-    }
-
     const { data, error } = await supabaseClient.functions.invoke("chat", {
       body: { message: mensagem },
     });

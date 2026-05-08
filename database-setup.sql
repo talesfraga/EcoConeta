@@ -129,10 +129,11 @@ CREATE POLICY "Anyone can view denuncias" ON denuncias
   FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Authenticated users can insert denuncias" ON denuncias;
-CREATE POLICY "Authenticated users can insert denuncias" ON denuncias
+DROP POLICY IF EXISTS "Anyone can insert denuncias" ON denuncias;
+CREATE POLICY "Anyone can insert denuncias" ON denuncias
   FOR INSERT WITH CHECK (
-    auth.role() = 'authenticated'
-    AND auth.uid() = user_id
+    auth.role() IN ('anon', 'authenticated')
+    AND (user_id IS NULL OR auth.uid() = user_id)
   );
 
 -- Politicas para pontos_coleta (todos podem visualizar)
@@ -154,11 +155,15 @@ CREATE POLICY "Anyone can view denuncia photos" ON storage.objects
   FOR SELECT USING (bucket_id = 'denuncias-fotos');
 
 DROP POLICY IF EXISTS "Authenticated users can upload denuncia photos" ON storage.objects;
-CREATE POLICY "Authenticated users can upload denuncia photos" ON storage.objects
+DROP POLICY IF EXISTS "Anyone can upload denuncia photos" ON storage.objects;
+CREATE POLICY "Anyone can upload denuncia photos" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'denuncias-fotos'
-    AND auth.role() = 'authenticated'
-    AND (storage.foldername(name))[1] = auth.uid()::text
+    AND auth.role() IN ('anon', 'authenticated')
+    AND (
+      (storage.foldername(name))[1] = 'public'
+      OR (storage.foldername(name))[1] = auth.uid()::text
+    )
     AND lower((storage.extension(name))) IN ('jpg', 'jpeg', 'png', 'webp')
   );
 
