@@ -286,3 +286,16 @@ const btnCadastro = document.getElementById("btnCadastro");
 
 if (btnReset) btnReset.onclick = esqSenha;
 if (btnCadastro) btnCadastro.onclick = cadastrar;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has("cadastro")) {
+        abrirCadastro();
+        return;
+    }
+
+    if (params.has("login") || params.has("reset")) {
+        abrirLogin();
+    }
+});
