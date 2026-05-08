@@ -1,8 +1,10 @@
 body {
-    min-width: 100vh;
+    width: 100%;
+    min-height: 100vh;
     background: linear-gradient(120deg, #003826, #001a12, #000);
     color: white;
     display: flex;
+    overflow-x: hidden;
 }
 
 /* SIDEBAR */

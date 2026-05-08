@@ -4,6 +4,8 @@
 
 // Cria folhas caindo
 function createLeaf() {
+    if (document.hidden) return;
+
     const leaf = document.createElement("div");
     leaf.classList.add("leaf");
 
@@ -24,8 +26,8 @@ function createLeaf() {
     setTimeout(() => leaf.remove(), 10000);
 }
 
-// Gera folhas continuamente
-setInterval(createLeaf, 250);
+// Gera folhas continuamente sem provocar excesso de mudancas no layout
+setInterval(createLeaf, 900);
 
 
 // Anima o fundo (cor mudando)
@@ -292,10 +294,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (params.has("cadastro")) {
         abrirCadastro();
+        history.replaceState(null, "", window.location.pathname);
         return;
     }
 
     if (params.has("login") || params.has("reset")) {
         abrirLogin();
+        history.replaceState(null, "", window.location.pathname);
     }
 });
