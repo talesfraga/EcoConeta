@@ -4,19 +4,24 @@
 
 const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-if (document.getElementById("boasVindas")) {
+function atualizarBoasVindas(usuarioAtual) {
+    const boasVindas = document.getElementById("boasVindas");
+    const pontos = document.getElementById("pontos");
 
-    if (usuario && usuario.nome) {
-        document.getElementById("boasVindas").innerText =
-            `Bem-vindo, ${usuario.nome}!`;
+    if (!boasVindas) return;
+
+    if (usuarioAtual && usuarioAtual.nome) {
+        boasVindas.innerText = `Bem-vindo, ${usuarioAtual.nome}!`;
     } else {
-        document.getElementById("boasVindas").innerText =
-            "Bem-vindo, Visitante!";
+        boasVindas.innerText = "Bem-vindo, Visitante!";
     }
 
-    document.getElementById("pontos").innerText =
-        `Pontos: ${usuario ? usuario.pontos || 0 : 0}`;
+    if (pontos) {
+        pontos.innerText = `Pontos: ${usuarioAtual ? usuarioAtual.pontos || 0 : 0}`;
+    }
 }
+
+atualizarBoasVindas(usuario);
 
 // ==============================
 // 🔐 Entrar no Site
@@ -39,7 +44,7 @@ function logar() {
         email: email,
         password: senha
     }).then(({ data, error }) => {
-        if (error) {
+        if (error || !data?.user) {
             msg.innerText = "E-mail ou senha incorretos!";
             msg.classList.add("erro");
             return;
@@ -65,22 +70,19 @@ function logar() {
                 // Verifica se a sessão foi criada corretamente
                 const { data: { user: currentUser } } = await supabaseClient.auth.getUser();
                 if (currentUser) {
-                    console.log('Sessão estabelecida, redirecionando para dashboard...');
-                    console.log('Caminho atual:', window.location.href);
-                    console.log('Redirecionando para:', window.location.origin + '/Front-end/html/dashboard.html');
-
                     // Redirecionamento com caminho absoluto
                     window.location.href = "./html/dashboard.html";
                 } else {
                     console.error('Sessão não foi estabelecida corretamente');
+                    localStorage.removeItem("usuarioLogado");
                     msg.innerText = "Erro na autenticação. Tente novamente.";
                     msg.classList.add("erro");
                 }
             } catch (error) {
                 console.error('Erro ao verificar sessão:', error);
-                // Mesmo com erro na verificação, tenta redirecionar
-                console.log('Tentando redirecionamento forçado...');
-                window.location.href = "./html/dashboard.html";
+                localStorage.removeItem("usuarioLogado");
+                msg.innerText = "Erro na autenticação. Tente novamente.";
+                msg.classList.add("erro");
             }
         }, 500);
     }).catch(err => {
@@ -98,7 +100,6 @@ function logout() {
 
     // Depois limpa a sessão do Supabase
     supabaseClient.auth.signOut().then(() => {
-        console.log('Logout realizado com sucesso');
         window.location.href = "../index.html";
     }).catch(err => {
         console.error("Erro ao fazer logout do Supabase:", err);
@@ -106,3 +107,53 @@ function logout() {
         window.location.href = "../index.html";
     });
 }
+
+async function verificarAcessoDashboard() {
+    const usuarioLocal = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+    if (!usuarioLocal) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    atualizarBoasVindas(usuarioLocal);
+
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+
+        if (error || !user || !session) {
+            localStorage.removeItem("usuarioLogado");
+            window.location.href = "../index.html";
+            return;
+        }
+
+    } catch (error) {
+        console.error("Erro ao verificar sessao Supabase:", error);
+    }
+}
+
+function mostrarSecao(secao) {
+    document.querySelectorAll('[id^="secao-"]').forEach(el => el.classList.add("hidden"));
+
+    const alvo = document.getElementById("secao-" + secao);
+    if (!alvo) return;
+
+    alvo.classList.remove("hidden");
+
+    if (secao === "mapa") {
+        setTimeout(async () => {
+            await inicializarMapa();
+            if (mapa) mapa.invalidateSize();
+        }, 100);
+    }
+
+    if (secao === "denuncia") carregarDenuncias();
+    if (secao === "educacao") renderizarEducacao("todos");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("secao-inicio")) {
+        verificarAcessoDashboard();
+    }
+});

@@ -17,7 +17,9 @@ yarn/
 # Arquivos temporários
 *.tmp
 *.temp
+*.zip
 .DS_Store
+supabase/supabase/.temp/
 
 # IDE
 .vscode/

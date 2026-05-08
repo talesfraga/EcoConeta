@@ -26,6 +26,33 @@
         <div id="secao-inicio">
             <h2 id="boasVindas">Bem-vindo ao EcoConecta+ 🌱</h2>
             <p id="subtitulo">Conectando você ao futuro sustentável</p>
+
+            <div class="ecoboard-grid">
+                <div class="ecoboard-card destaque">
+                    <span class="ecoboard-label">Sorocaba</span>
+                    <h3>Descarte consciente na cidade</h3>
+                    <p>Encontre ecopontos, registre descartes irregulares e tire dúvidas ambientais com foco na realidade de Sorocaba.</p>
+                </div>
+
+                <div class="ecoboard-card">
+                    <span class="ecoboard-numero">6</span>
+                    <p>Ecopontos municipais mapeados para pequenos volumes de resíduos.</p>
+                    <button onclick="mostrarSecao('mapa')">Abrir EcoMapa</button>
+                </div>
+
+                <div class="ecoboard-card">
+                    <span class="ecoboard-numero">1m³</span>
+                    <p>Volume máximo recomendado por descarte nos ecopontos.</p>
+                    <button onclick="mostrarSecao('educacao')">Ver orientações</button>
+                </div>
+
+                <div class="ecoboard-card">
+                    <span class="ecoboard-label">Ação rápida</span>
+                    <h3>Encontrou descarte irregular?</h3>
+                    <p>Registre uma denúncia com descrição, local e foto para acompanhar no feed público.</p>
+                    <button onclick="mostrarSecao('denuncia')">Registrar denúncia</button>
+                </div>
+            </div>
         </div>
 
         <!-- ECOCHAT -->
@@ -131,47 +158,5 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
 
-<script>
-    // Verificar se usuário está logado ao carregar a página
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Primeiro, verifica se há dados no localStorage
-        const usuarioLocal = JSON.parse(localStorage.getItem("usuarioLogado"));
-
-        if (!usuarioLocal) {
-            // Se não há dados locais, redireciona para login
-            window.location.href = '../index.html';
-            return;
-        }
-
-        // Carrega dados do usuário do localStorage
-        if (document.getElementById("boasVindas")) {
-            document.getElementById("boasVindas").innerText =
-                `Bem-vindo, ${usuarioLocal.nome}!`;
-            document.getElementById("pontos").innerText =
-                `Pontos: ${usuarioLocal.pontos || 0}`;
-        }
-
-        // Verifica a sessão do Supabase em segundo plano (não bloqueia o acesso)
-        try {
-            const { data: { user }, error } = await supabaseClient.auth.getUser();
-
-            if (error || !user) {
-                console.warn('Sessão Supabase não encontrada, mas usuário tem dados locais');
-                // Não redireciona, permite acesso com dados locais
-            } else {
-                console.log('Sessão Supabase OK:', user.email);
-            }
-        } catch (error) {
-            console.error('Erro ao verificar sessão Supabase:', error);
-            // Não redireciona, permite acesso com dados locais
-        }
-    });
-
-    function mostrarSecao(secao) {
-        document.querySelectorAll('[id^="secao-"]').forEach(el => el.classList.add('hidden'));
-        document.getElementById('secao-' + secao).classList.remove('hidden');
-        if (secao === 'denuncia') carregarDenuncias();
-        if (secao === 'educacao') renderizarEducacao('todos');
-    }
-</script>
+<script src="../js/dashboard.js"></script>
 </html>

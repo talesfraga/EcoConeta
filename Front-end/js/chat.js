@@ -1,13 +1,16 @@
 // ==============================
-// 💬 ECOCHAT — Chatbot Ambiental
+// ECOCHAT - Chatbot Ambiental
 // ==============================
-
-const FUNCTION_URL = "https://hkgfyzyzfhxdttyxvxkd.supabase.co/functions/v1/chat"; // ← troque pela sua URL
 
 async function enviarMensagem() {
   const input = document.getElementById("chatInput");
   const mensagem = input.value.trim();
   if (!mensagem) return;
+
+  if (mensagem.length > 1000) {
+    adicionarBolha("Envie uma mensagem com no maximo 1000 caracteres.", "bot");
+    return;
+  }
 
   adicionarBolha(mensagem, "usuario");
   input.value = "";
@@ -15,29 +18,38 @@ async function enviarMensagem() {
   const digitando = adicionarBolha("...", "bot", true);
 
   try {
-    const response = await fetch(FUNCTION_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: "anonimo", message: mensagem }),
+    let { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (!session?.access_token) {
+      const { data } = await supabaseClient.auth.refreshSession();
+      session = data.session;
+    }
+
+    if (!session?.user || !session?.access_token) {
+      digitando.remove();
+      adicionarBolha("Faca login novamente para usar o EcoChat.", "bot");
+      return;
+    }
+
+    const { data, error } = await supabaseClient.functions.invoke("chat", {
+      body: { message: mensagem },
     });
 
-    const data = await response.json();
     digitando.remove();
 
-    if (!response.ok) {
-      console.error("Erro na função chat:", data);
-      adicionarBolha("Erro ao conectar com o assistente. Tente novamente.", "bot");
+    if (error) {
+      console.error("Erro na funcao chat:", error);
+      adicionarBolha("EcoChat indisponivel agora. Tente novamente em instantes.", "bot");
       return;
     }
 
     if (!data?.answer) {
-      console.error("Resposta inválida da função chat:", data);
-      adicionarBolha("Não foi possível obter resposta da IA. Tente novamente.", "bot");
+      console.error("Resposta invalida da funcao chat:", data);
+      adicionarBolha("Nao foi possivel obter resposta da IA. Tente novamente.", "bot");
       return;
     }
 
     adicionarBolha(data.answer, "bot");
-
   } catch (err) {
     digitando.remove();
     console.error("Erro no chat:", err);
@@ -45,7 +57,6 @@ async function enviarMensagem() {
   }
 }
 
-// Cria uma bolha de mensagem no chat
 function adicionarBolha(texto, tipo, temporaria = false) {
   const chat = document.getElementById("chatMensagens");
   const bolha = document.createElement("div");
@@ -57,7 +68,6 @@ function adicionarBolha(texto, tipo, temporaria = false) {
   return bolha;
 }
 
-// Permite enviar com Enter
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("chatInput");
   if (input) {

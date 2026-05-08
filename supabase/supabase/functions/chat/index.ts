@@ -3,18 +3,23 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 if (!GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY não está configurada no ambiente");
+  throw new Error("GEMINI_API_KEY nao esta configurada no ambiente");
 }
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+const GEMINI_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type",
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Vary": "Origin",
 };
 
 serve(async (req) => {
@@ -22,17 +27,33 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  try {
-    const { userId, message } = await req.json();
+  if (req.method !== "POST") {
+    return json({ error: "Metodo nao permitido" }, 405);
+  }
 
-    if (!userId || !message) {
-      return new Response(JSON.stringify({ error: "userId e message são obrigatórios" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+  try {
+    const token = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (!token) {
+      return json({ error: "Sessao obrigatoria" }, 401);
     }
 
-    // Busca histórico das últimas 5 trocas
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !authData.user) {
+      return json({ error: "Sessao invalida" }, 401);
+    }
+
+    const { message } = await req.json();
+    if (!message || typeof message !== "string") {
+      return json({ error: "message e obrigatorio" }, 400);
+    }
+
+    const cleanMessage = message.trim();
+    if (cleanMessage.length < 2 || cleanMessage.length > 1000) {
+      return json({ error: "message deve ter entre 2 e 1000 caracteres" }, 400);
+    }
+
+    const userId = authData.user.id;
+
     const { data: historico } = await supabase
       .from("chat_history")
       .select("question, answer")
@@ -40,58 +61,63 @@ serve(async (req) => {
       .order("created_at", { ascending: false })
       .limit(5);
 
-    // Monta histórico no formato do Gemini
     const histContents = (historico || []).reverse().flatMap((h: any) => [
       { role: "user", parts: [{ text: h.question }] },
       { role: "model", parts: [{ text: h.answer }] },
     ]);
 
-    const contents = [
-      ...histContents,
-      { role: "user", parts: [{ text: message }] },
-    ];
-
     const geminiRes = await fetch(GEMINI_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_API_KEY,
+      },
       body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: "Você é um assistente focado em questões ambientais. Responda sempre em português." }]
+        systemInstruction: {
+          parts: [{
+            text: "Voce e o EcoChat, um assistente ambiental para usuarios de Sorocaba. Responda sempre em portugues do Brasil, com orientacoes praticas, curtas e seguras sobre reciclagem, descarte correto, ecopontos, consumo consciente e denuncias ambientais.",
+          }],
         },
-        contents,
-        temperature: 0.2,
-        candidateCount: 1,
+        contents: [
+          ...histContents,
+          { role: "user", parts: [{ text: cleanMessage }] },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          candidateCount: 1,
+        },
       }),
     });
 
     const geminiData = await geminiRes.json();
-    console.log("Gemini response:", JSON.stringify(geminiData));
 
     if (!geminiRes.ok) {
       console.error("Gemini API error:", geminiData);
-      throw new Error(geminiData.error?.message || "Erro na API Gemini");
+      return json({
+        error: geminiData.error?.message || "Erro na API Gemini",
+      }, 502);
     }
 
     const answer =
-      geminiData.candidates?.[0]?.content?.parts?.[0]?.text ??
-      geminiData.candidates?.[0]?.content?.[0]?.text ??
-      geminiData.output?.[0]?.content?.[0]?.text ??
-      "Não consegui gerar uma resposta.";
+      geminiData.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Nao consegui gerar uma resposta agora.";
 
     await supabase.from("chat_history").insert({
       user_id: userId,
-      question: message,
+      question: cleanMessage,
       answer,
     });
 
-    return new Response(JSON.stringify({ answer }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
+    return json({ answer });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: "Erro interno: " + err.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("Chat function error:", err);
+    return json({ error: "Erro interno no EcoChat" }, 500);
   }
 });
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
