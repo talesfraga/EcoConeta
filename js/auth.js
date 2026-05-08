@@ -53,28 +53,20 @@ animateBackground();
 function esqSenha() {
 
     const email = document.getElementById("email").value;
-    const novaSenha = document.getElementById("novaSenha").value;
-    const confirmarSenha = document.getElementById("confirmarSenha").value;
     const msg = document.getElementById("mensagem");
 
     msg.className = "msg";
 
     // Validação de campos
-    if (!email || !novaSenha || !confirmarSenha) {
+    if (!email) {
         msg.innerText = "Preencha todos os campos!";
         msg.classList.add("erro");
         return;
     }
 
     // Verifica se senhas coincidem
-    if (novaSenha !== confirmarSenha) {
-        msg.innerText = "As senhas não são iguais!";
-        msg.classList.add("erro");
-        return;
-    }
-
     supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password.html'
+        redirectTo: new URL("reset-password.html", window.location.href).href
     }).then(({ error }) => {
         if (error) {
             msg.innerText = "Erro ao enviar e-mail de redefinição.";
@@ -105,8 +97,8 @@ function ativarModoReset() {
     document.getElementById("password").classList.add("hidden");
     document.getElementById("btnLogin").classList.add("hidden");
 
-    document.getElementById("novaSenha").classList.remove("hidden");
-    document.getElementById("confirmarSenha").classList.remove("hidden");
+    document.getElementById("novaSenha").classList.add("hidden");
+    document.getElementById("confirmarSenha").classList.add("hidden");
     document.getElementById("btnReset").classList.remove("hidden");
 
     // Link para voltar pro login
@@ -212,7 +204,7 @@ function cadastrar() {
                 nome: nome,
                 sobrenome: sobrenome
             },
-            emailRedirectTo: window.location.origin + '/index.html'
+            emailRedirectTo: new URL("index.html", window.location.href).href
         }
     }).then(({ data, error }) => {
         if (error) {
@@ -227,8 +219,6 @@ function cadastrar() {
             msg.classList.add("erro");
             return;
         }
-
-        console.log('Signup successful:', data);
 
         if (data.user && !data.user.email_confirmed_at) {
             msg.innerText = "Cadastro realizado! Faça login com suas credenciais.";
@@ -251,6 +241,8 @@ function cadastrar() {
 // EVENTOS DE CLIQUE
 // ==============================
 
-document.getElementById("btnReset").onclick = esqSenha;
-document.getElementById("btnCadastro").onclick = cadastrar;
+const btnReset = document.getElementById("btnReset");
+const btnCadastro = document.getElementById("btnCadastro");
 
+if (btnReset) btnReset.onclick = esqSenha;
+if (btnCadastro) btnCadastro.onclick = cadastrar;

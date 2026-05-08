@@ -1,64 +1,113 @@
 // ==============================
-// 🗺️ ECOMAPA — Mapa de Pontos de Reciclagem
+// ECOMAPA - Mapa de Pontos de Reciclagem em Sorocaba
 // ==============================
 
-// Pontos de exemplo (substitua por dados reais do Supabase)
-const pontosReciclagem = [
+const SOROCABA_CENTER = [-23.5015, -47.4526];
+
+// Pontos de fallback caso o Supabase ainda nao esteja populado.
+let pontosReciclagem = [
   {
-    nome: "Ecoponto Centro",
+    nome: "Ecoponto Vila Helena",
     tipo: "ecoponto",
-    lat: -23.550520,
-    lng: -46.633308,
-    endereco: "Av. Paulista, 1000 - São Paulo, SP",
-    horario: "24h",
-    materiais: ["Papel", "Plástico", "Metal", "Vidro"]
+    lat: -23.47699,
+    lng: -47.49332,
+    endereco: "Rua Roque Sampaio, 100 - Vila Helena, Sorocaba/SP",
+    horario: "Segunda a sexta, 7h as 17h; sabado, 7h as 12h",
+    materiais: ["Entulho ate 1m3", "Madeira", "Moveis", "Reciclaveis", "Eletronicos"],
   },
   {
-    nome: "Cooperativa Verde",
+    nome: "Ecoponto Cajuru",
+    tipo: "ecoponto",
+    lat: -23.39753,
+    lng: -47.38012,
+    endereco: "Rua Mario Monteiro de Carvalho, s/n - Cajuru do Sul, Sorocaba/SP",
+    horario: "Segunda a sexta, 7h as 17h; sabado, 7h as 12h",
+    materiais: ["Entulho ate 1m3", "Madeira", "Moveis", "Reciclaveis", "Eletronicos"],
+  },
+  {
+    nome: "Ecoponto Julio de Mesquita Filho",
+    tipo: "ecoponto",
+    lat: -23.4747,
+    lng: -47.4698,
+    endereco: "Av. Domingos Martins Vieira, 100 - Julio de Mesquita Filho, Sorocaba/SP",
+    horario: "Segunda a sexta, 7h as 17h; sabado, 7h as 12h",
+    materiais: ["Entulho ate 1m3", "Madeira", "Moveis", "Reciclaveis", "Eletronicos"],
+  },
+  {
+    nome: "Ecoponto Vila Hortencia",
+    tipo: "ecoponto",
+    lat: -23.5068,
+    lng: -47.4316,
+    endereco: "Rua Lourenco Molineiro, 200 - Vila Hortencia, Sorocaba/SP",
+    horario: "Segunda a sexta, 7h as 17h; sabado, 7h as 12h",
+    materiais: ["Entulho ate 1m3", "Madeira", "Moveis", "Reciclaveis", "Eletronicos"],
+  },
+  {
+    nome: "Ecoponto Brigadeiro Tobias",
+    tipo: "ecoponto",
+    lat: -23.5491,
+    lng: -47.3543,
+    endereco: "Rua Jose Sarti, 636 - Brigadeiro Tobias, Sorocaba/SP",
+    horario: "Segunda a sexta, 7h as 17h; sabado, 7h as 12h",
+    materiais: ["Entulho ate 1m3", "Madeira", "Moveis", "Reciclaveis", "Eletronicos"],
+  },
+  {
+    nome: "Ecoponto Aparecidinha",
+    tipo: "ecoponto",
+    lat: -23.4305,
+    lng: -47.3739,
+    endereco: "Rua Luiz Alberto Mitidieri com Estrada do Barreiro - Aparecidinha, Sorocaba/SP",
+    horario: "Segunda a sexta, 7h as 17h; sabado, 7h as 12h",
+    materiais: ["Entulho ate 1m3", "Madeira", "Moveis", "Reciclaveis", "Eletronicos"],
+  },
+  {
+    nome: "CORESO",
     tipo: "cooperativa",
-    lat: -23.561684,
-    lng: -46.625758,
-    endereco: "Rua da Consolação, 500 - São Paulo, SP",
-    horario: "08h às 18h",
-    materiais: ["Eletrônicos", "Pilhas", "Óleo de cozinha"]
+    lat: -23.5006,
+    lng: -47.4692,
+    endereco: "Rua Jose Henrique Dias, 215 - Sorocaba/SP",
+    horario: "Consulte antes de levar materiais",
+    materiais: ["Papel", "Papelao", "Plastico", "Metal", "Oleo de cozinha", "Eletroeletronicos"],
   },
-  {
-    nome: "Ponto de Reciclagem Vila Madalena",
-    tipo: "reciclagem",
-    lat: -23.546389,
-    lng: -46.691111,
-    endereco: "Rua Aspicuelta, 300 - São Paulo, SP",
-    horario: "07h às 19h",
-    materiais: ["Papel", "Plástico", "Orgânicos"]
-  }
 ];
 
 let mapa = null;
+let pontosCarregados = false;
 
-function inicializarMapa() {
-  if (mapa) return; // Já inicializado
+async function inicializarMapa() {
+  if (mapa) return;
 
-  // Cria o mapa centrado em São Paulo
-  mapa = L.map('mapa').setView([-23.550520, -46.633308], 12);
+  await carregarPontosColeta();
 
-  // Adiciona tiles do OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
+  mapa = L.map("mapa").setView(SOROCABA_CENTER, 12);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
     maxZoom: 18,
   }).addTo(mapa);
 
-  // Adiciona pontos ao mapa
   adicionarPontosAoMapa();
-
-  // Adiciona controle de localização do usuário
   adicionarControleLocalizacao();
 }
 
-function adicionarPontosAoMapa() {
-  pontosReciclagem.forEach(ponto => {
-    const icone = criarIcone(ponto.tipo);
+async function carregarPontosColeta() {
+  if (pontosCarregados || typeof supabaseClient === "undefined") return;
 
-    const marker = L.marker([ponto.lat, ponto.lng], { icon: icone })
+  const { data, error } = await supabaseClient
+    .from("pontos_coleta")
+    .select("nome, tipo, lat, lng, endereco, horario, materiais")
+    .order("nome", { ascending: true });
+
+  if (!error && data && data.length > 0) {
+    pontosReciclagem = data;
+  }
+
+  pontosCarregados = true;
+}
+
+function adicionarPontosAoMapa() {
+  pontosReciclagem.forEach((ponto) => {
+    L.marker([ponto.lat, ponto.lng], { icon: criarIcone(ponto.tipo) })
       .addTo(mapa)
       .bindPopup(criarPopupConteudo(ponto));
   });
@@ -66,16 +115,16 @@ function adicionarPontosAoMapa() {
 
 function criarIcone(tipo) {
   const cores = {
-    reciclagem: '#4CAF50',
-    ecoponto: '#2196F3',
-    cooperativa: '#FF9800'
+    reciclagem: "#4CAF50",
+    ecoponto: "#2196F3",
+    cooperativa: "#FF9800",
   };
 
   return L.divIcon({
-    className: 'custom-marker',
-    html: `<div style="background-color: ${cores[tipo]}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>`,
+    className: "custom-marker",
+    html: `<div style="background-color: ${cores[tipo] || cores.reciclagem}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>`,
     iconSize: [20, 20],
-    iconAnchor: [10, 10]
+    iconAnchor: [10, 10],
   });
 }
 
@@ -83,11 +132,11 @@ function criarPopupConteudo(ponto) {
   return `
     <div class="mapa-popup">
       <h4>${ponto.nome}</h4>
-      <p><strong>Endereço:</strong> ${ponto.endereco}</p>
-      <p><strong>Horário:</strong> ${ponto.horario}</p>
+      <p><strong>Endereco:</strong> ${ponto.endereco}</p>
+      <p><strong>Horario:</strong> ${ponto.horario || "Consulte antes de ir"}</p>
       <p><strong>Materiais aceitos:</strong></p>
       <ul>
-        ${ponto.materiais.map(mat => `<li>${mat}</li>`).join('')}
+        ${(ponto.materiais || []).map((mat) => `<li>${mat}</li>`).join("")}
       </ul>
       <button onclick="abrirNoMaps(${ponto.lat}, ${ponto.lng})">Ver no Google Maps</button>
     </div>
@@ -95,35 +144,20 @@ function criarPopupConteudo(ponto) {
 }
 
 function adicionarControleLocalizacao() {
+  if (!L.control.locate) return;
+
   L.control.locate({
-    position: 'topright',
+    position: "topright",
     strings: {
-      title: "Mostrar minha localização"
+      title: "Mostrar minha localizacao",
     },
     locateOptions: {
-      enableHighAccuracy: true
-    }
+      enableHighAccuracy: true,
+    },
   }).addTo(mapa);
 }
 
 function abrirNoMaps(lat, lng) {
   const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-  window.open(url, '_blank');
-}
-
-// Inicializa o mapa quando a seção for mostrada
-function mostrarSecao(secao) {
-  document.querySelectorAll('[id^="secao-"]').forEach(el => el.classList.add('hidden'));
-  document.getElementById('secao-' + secao).classList.remove('hidden');
-
-  if (secao === 'mapa') {
-    // Pequeno delay para garantir que o container esteja visível
-    setTimeout(() => {
-      inicializarMapa();
-      mapa.invalidateSize(); // Recalcula o tamanho do mapa
-    }, 100);
-  }
-
-  if (secao === 'denuncia') carregarDenuncias();
-  if (secao === 'educacao') renderizarEducacao('todos');
+  window.open(url, "_blank");
 }
