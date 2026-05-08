@@ -23,6 +23,13 @@ function atualizarBoasVindas(usuarioAtual) {
 
 atualizarBoasVindas(usuario);
 
+function atualizarBotaoAuth(logado) {
+    const authButton = document.getElementById("authButton");
+    if (!authButton) return;
+
+    authButton.innerText = logado ? "Sair" : "Entrar";
+}
+
 // ==============================
 // 🔐 Entrar no Site
 // ==============================
@@ -94,17 +101,28 @@ function logar() {
 
 // Sair da conta
 
+function handleAuthAction() {
+    const usuarioLocal = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+    if (usuarioLocal) {
+        logout();
+        return;
+    }
+
+    window.location.href = "../index.html?login=1";
+}
+
 function logout() {
     // Limpa dados locais primeiro
     localStorage.removeItem("usuarioLogado");
 
     // Depois limpa a sessão do Supabase
     supabaseClient.auth.signOut().then(() => {
-        window.location.href = "../index.html";
+        window.location.href = "../index.html?login=1";
     }).catch(err => {
         console.error("Erro ao fazer logout do Supabase:", err);
         // Mesmo com erro, redireciona para login
-        window.location.href = "../index.html";
+        window.location.href = "../index.html?login=1";
     });
 }
 
@@ -112,11 +130,13 @@ async function verificarAcessoDashboard() {
     const usuarioLocal = JSON.parse(localStorage.getItem("usuarioLogado"));
 
     if (!usuarioLocal) {
-        window.location.href = "../index.html";
+        atualizarBoasVindas(null);
+        atualizarBotaoAuth(false);
         return;
     }
 
     atualizarBoasVindas(usuarioLocal);
+    atualizarBotaoAuth(true);
 
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -124,10 +144,12 @@ async function verificarAcessoDashboard() {
 
         if (error || !user || !session) {
             localStorage.removeItem("usuarioLogado");
-            window.location.href = "../index.html";
+            atualizarBoasVindas(null);
+            atualizarBotaoAuth(false);
             return;
         }
 
+        atualizarBotaoAuth(true);
     } catch (error) {
         console.error("Erro ao verificar sessao Supabase:", error);
     }
