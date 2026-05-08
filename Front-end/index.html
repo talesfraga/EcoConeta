@@ -11,7 +11,36 @@
 
 <body>
 
-    <div class="card-login">
+    <main class="home-publica" id="homePublica">
+        <section class="home-conteudo">
+            <img class="home-logo" src="./src/img/logoSemfundo copy.jpeg" alt="EcoConecta+">
+            <span class="home-tag">Sorocaba sustentável</span>
+            <h1>Conecte-se com ações ambientais da sua cidade</h1>
+            <p>Encontre ecopontos, registre denúncias ambientais, aprenda práticas sustentáveis e converse com o EcoChat.</p>
+
+            <div class="home-acoes">
+                <button type="button" onclick="abrirLogin()">Entrar</button>
+                <button type="button" class="btn-secundario" onclick="abrirCadastro()">Criar conta</button>
+            </div>
+        </section>
+
+        <section class="home-recursos" aria-label="Recursos do EcoConecta">
+            <article>
+                <strong>EcoMapa</strong>
+                <span>Pontos de descarte e reciclagem em Sorocaba.</span>
+            </article>
+            <article>
+                <strong>EcoDenúncia</strong>
+                <span>Registro de problemas ambientais com foto.</span>
+            </article>
+            <article>
+                <strong>EcoEducação</strong>
+                <span>Dicas simples para reduzir impacto no dia a dia.</span>
+            </article>
+        </section>
+    </main>
+
+    <div class="card-login hidden" id="cardLogin">
 
         <img id="logo" src="./src/img/logoSemfundo copy.jpeg" alt="logo">
 
@@ -52,6 +81,8 @@
             <button id="btnCadastro" class="hidden">Cadastrar</button>
 
         </div>
+
+        <button type="button" class="btn-voltar-home" onclick="voltarHome()">Voltar</button>
         
 
     </div>
