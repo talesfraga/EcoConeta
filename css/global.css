@@ -9,8 +9,113 @@
 
 body {
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
     min-height: 100vh;
+}
+
+.home-publica {
+    width: min(1100px, calc(100% - 32px));
+    min-height: 100vh;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    align-items: center;
+    gap: 36px;
+    color: white;
+    position: relative;
+    z-index: 10;
+}
+
+.home-conteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.home-logo {
+    width: min(320px, 80vw);
+    margin-left: -40px;
+    margin-bottom: -56px;
+}
+
+.home-tag {
+    color: #ffdc00;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.home-conteudo h1 {
+    color: #00ff88;
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1.05;
+    max-width: 760px;
+    text-shadow: 0 0 16px rgba(0, 255, 136, 0.45);
+}
+
+.home-conteudo p {
+    max-width: 620px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+.home-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.home-acoes button,
+.btn-voltar-home {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #00ff88;
+    color: black;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 0 10px #00ff88;
+}
+
+.home-acoes .btn-secundario,
+.btn-voltar-home {
+    background: rgba(0, 30, 20, 0.55);
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 150, 0.25);
+    box-shadow: none;
+}
+
+.home-recursos {
+    display: grid;
+    gap: 14px;
+}
+
+.home-recursos article {
+    background: rgba(0, 30, 20, 0.35);
+    border: 1px solid rgba(0, 255, 150, 0.18);
+    border-radius: 12px;
+    padding: 18px;
+    backdrop-filter: blur(12px);
+}
+
+.home-recursos strong {
+    display: block;
+    color: #00ff88;
+    margin-bottom: 8px;
+}
+
+.home-recursos span {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.btn-voltar-home {
+    margin-top: 12px;
+    width: 100%;
 }
 
 /* CONTAINER */
@@ -198,4 +303,16 @@ body {
 
 .msg.sucesso, .msg.erro {
     opacity: 1;
+}
+
+@media (max-width: 760px) {
+    .home-publica {
+        grid-template-columns: 1fr;
+        align-content: center;
+        padding: 42px 0;
+    }
+
+    .home-logo {
+        margin-left: -30px;
+    }
 }

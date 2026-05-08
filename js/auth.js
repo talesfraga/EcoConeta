@@ -45,6 +45,49 @@ function animateBackground() {
 
 animateBackground();
 
+function abrirLogin() {
+    const home = document.getElementById("homePublica");
+    const cardLogin = document.getElementById("cardLogin");
+
+    if (home) home.classList.add("hidden");
+    if (cardLogin) cardLogin.classList.remove("hidden");
+
+    voltarLogin();
+}
+
+function abrirCadastro() {
+    abrirLogin();
+    ativarModoCadastro();
+}
+
+function voltarHome() {
+    const home = document.getElementById("homePublica");
+    const cardLogin = document.getElementById("cardLogin");
+
+    if (cardLogin) cardLogin.classList.add("hidden");
+    if (home) home.classList.remove("hidden");
+}
+
+function atualizarTextoTroca(texto, acaoTexto, acao) {
+    const textoTroca = document.getElementById("textoTroca");
+    if (!textoTroca) return;
+
+    textoTroca.replaceChildren();
+    textoTroca.append(document.createTextNode(texto + " "));
+
+    const span = document.createElement("span");
+    const link = document.createElement("a");
+    link.href = "#";
+    link.innerText = acaoTexto;
+    link.addEventListener("click", (event) => {
+        event.preventDefault();
+        acao();
+    });
+
+    span.appendChild(link);
+    textoTroca.appendChild(span);
+}
+
 
 // ==============================
 // 🔐 ESQUECI MINHA SENHA
@@ -103,8 +146,7 @@ function ativarModoReset() {
 
     // Link para voltar pro login
 
-    document.getElementById("textoTroca").innerHTML =
-        'Já tem uma conta? <span><a href="#" onclick="voltarLogin()">Faça login</a></span>';
+    atualizarTextoTroca("Ja tem uma conta?", "Faca login", voltarLogin);
 }
 
 
@@ -131,8 +173,7 @@ function voltarLogin() {
 
     // Link para cadastro
 
-    document.getElementById("textoTroca").innerHTML =
-        'Esqueceu sua senha? <span><a href="#" onclick="ativarModoReset()">Clique aqui</a></span>';
+    atualizarTextoTroca("Esqueceu sua senha?", "Clique aqui", ativarModoReset);
 }
 
 
@@ -158,8 +199,7 @@ function ativarModoCadastro() {
     document.getElementById("btnCadastro").classList.remove("hidden");
 
     // Link para voltar pro login
-    document.getElementById("textoTroca").innerHTML =
-        'Já tem uma conta? <span><a href="#" onclick="voltarLogin()">Faça login</a></span>';
+    atualizarTextoTroca("Ja tem uma conta?", "Faca login", voltarLogin);
 }
 
 
