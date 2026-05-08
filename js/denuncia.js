@@ -17,23 +17,16 @@ async function enviarDenuncia() {
 
   if (!validarDenuncia(email, titulo, descricao, msg)) return;
 
-  const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-  if (userError || !user) {
-    msg.innerText = "Faca login novamente para enviar uma denuncia.";
-    msg.classList.add("erro");
-    return;
-  }
-
   let foto_url = null;
 
   if (fotoInput.files.length > 0) {
-    const upload = await enviarFotoDenuncia(fotoInput.files[0], user.id, msg);
+    const upload = await enviarFotoDenuncia(fotoInput.files[0], msg);
     if (!upload.ok) return;
     foto_url = upload.url;
   }
 
   const { error } = await supabaseClient.from("denuncias").insert({
-    user_id: user.id,
+    user_id: null,
     email,
     titulo,
     descricao,
@@ -85,7 +78,7 @@ function validarDenuncia(email, titulo, descricao, msg) {
   return true;
 }
 
-async function enviarFotoDenuncia(file, userId, msg) {
+async function enviarFotoDenuncia(file, msg) {
   if (!DENUNCIA_ALLOWED_TYPES.includes(file.type)) {
     msg.innerText = "Envie uma imagem JPG, PNG ou WEBP.";
     msg.classList.add("erro");
@@ -99,7 +92,7 @@ async function enviarFotoDenuncia(file, userId, msg) {
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const fileName = `${userId}/${crypto.randomUUID()}.${ext}`;
+  const fileName = `public/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await supabaseClient.storage
     .from("denuncias-fotos")
