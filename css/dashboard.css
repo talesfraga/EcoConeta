@@ -175,6 +175,7 @@ button:active {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-width: 0;
 }
 
 /* Titulo */
@@ -215,6 +216,7 @@ button:active {
 .mapa {
     flex: 1;
     height: 500px;
+    min-width: 0;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
@@ -322,6 +324,7 @@ button:active {
 
 .chat-input-area input {
     flex: 1;
+    min-width: 0;
     padding: 10px 16px;
     border-radius: 20px;
     border: 1px solid rgba(0, 255, 150, 0.3);
@@ -438,7 +441,7 @@ button:active {
 
 .denuncia-form {
     flex: 1;
-    min-width: 300px;
+    min-width: min(300px, 100%);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -514,7 +517,7 @@ button:active {
 /* Feed */
 .denuncia-feed-section {
     flex: 1;
-    min-width: 300px;
+    min-width: min(300px, 100%);
 }
 
 .denuncia-feed-section h3 {
@@ -866,4 +869,167 @@ button:active {
 .modal-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 14px;
+}
+
+@media (max-width: 900px) {
+    body {
+        display: block;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 12px;
+        gap: 8px;
+        position: sticky;
+        top: 0;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 255, 150, 0.2);
+        box-shadow: 0 0 16px rgba(0, 255, 150, 0.35);
+    }
+
+    .sidebar img {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: min(190px, 60vw);
+        margin-top: -18px;
+        margin-bottom: -26px;
+    }
+
+    .sidebar a {
+        margin: 0;
+        padding: 9px 10px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .sidebar a:hover {
+        transform: none;
+    }
+
+    .containerDeshboard {
+        width: 100%;
+        padding: 22px 14px 32px;
+    }
+
+    #boasVindas {
+        font-size: clamp(22px, 7vw, 28px);
+        line-height: 1.2;
+    }
+
+    .secao-titulo {
+        font-size: clamp(20px, 6vw, 22px);
+        line-height: 1.25;
+    }
+
+    .ecoboard-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-top: 22px;
+    }
+
+    .ecoboard-card {
+        min-height: 0;
+        padding: 16px;
+    }
+
+    .ecoboard-card button {
+        width: 100%;
+        align-self: stretch;
+    }
+
+    .mapa-container,
+    .denuncia-wrapper {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .mapa {
+        width: 100%;
+        height: min(420px, 65vh);
+        min-height: 320px;
+    }
+
+    .mapa-legenda,
+    .denuncia-form,
+    .denuncia-feed-section {
+        width: 100%;
+    }
+
+    .chat-container {
+        width: 100%;
+    }
+
+    .chat-input-area {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .chat-input-area button {
+        padding: 10px 14px;
+    }
+
+    .educacao-filtros {
+        gap: 8px;
+    }
+
+    .filtro-btn {
+        flex: 1 1 calc(50% - 8px);
+        padding: 9px 10px;
+    }
+
+    .educacao-grid {
+        grid-template-columns: 1fr;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .denuncia-feed {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+
+    .educacao-modal {
+        width: calc(100% - 24px);
+        padding: 24px 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .containerDeshboard {
+        padding-inline: 10px;
+    }
+
+    .sidebar {
+        padding-inline: 10px;
+    }
+
+    .sidebar a {
+        font-size: 12px;
+        padding-inline: 8px;
+    }
+
+    .chat-input-area {
+        flex-direction: column;
+    }
+
+    .chat-input-area button {
+        width: 100%;
+    }
+
+    .filtro-btn {
+        flex-basis: 100%;
+    }
+
+    .denuncia-card-header,
+    .educacao-card-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
 }
